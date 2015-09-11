@@ -32,7 +32,8 @@ import javax.swing.Icon
 public class KotlinLambdaSmartStepTarget(
         label: String,
         highlightElement: JetFunctionLiteralExpression,
-        lines: Range<Int>
+        lines: Range<Int>,
+        val isInline: Boolean
 ): SmartStepTarget(label, highlightElement, true, lines) {
     override fun getIcon() = JetIcons.LAMBDA
 

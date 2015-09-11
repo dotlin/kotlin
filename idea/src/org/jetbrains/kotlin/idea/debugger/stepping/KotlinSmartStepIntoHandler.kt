@@ -68,12 +68,12 @@ public class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
             override fun visitFunctionLiteralExpression(expression: JetFunctionLiteralExpression) {
                 val context = expression.analyze()
                 val resolvedCall = expression.getParentCall(context).getResolvedCall(context)
-                if (resolvedCall != null && !InlineUtil.isInline(resolvedCall.getResultingDescriptor())) {
+                if (resolvedCall != null) {
                     val arguments = resolvedCall.getValueArguments()
                     for ((param, argument) in arguments) {
                         if (argument.getArguments().any { it.getArgumentExpression() == expression}) {
                             val label = KotlinLambdaSmartStepTarget.calcLabel(resolvedCall.getResultingDescriptor(), param.getName())
-                            result.add(KotlinLambdaSmartStepTarget(label, expression, lines))
+                            result.add(KotlinLambdaSmartStepTarget(label, expression, lines, InlineUtil.isInline(resolvedCall.getResultingDescriptor())))
                             break
                         }
                     }
@@ -181,7 +181,7 @@ public class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
     override fun createMethodFilter(stepTarget: SmartStepTarget?): MethodFilter? {
         return when (stepTarget) {
             is KotlinMethodSmartStepTarget -> KotlinBasicStepMethodFilter(stepTarget.resolvedElement, stepTarget.getCallingExpressionLines()!!)
-            is KotlinLambdaSmartStepTarget -> KotlinLambdaMethodFilter(stepTarget.getLambda(), stepTarget.getCallingExpressionLines()!! )
+            is KotlinLambdaSmartStepTarget -> KotlinLambdaMethodFilter(stepTarget.getLambda(), stepTarget.getCallingExpressionLines()!!, stepTarget.isInline)
             else -> super.createMethodFilter(stepTarget)
         }
     }

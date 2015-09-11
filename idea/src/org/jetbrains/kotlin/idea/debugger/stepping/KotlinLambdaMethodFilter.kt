@@ -19,19 +19,15 @@ package org.jetbrains.kotlin.idea.debugger.stepping
 import com.intellij.debugger.SourcePosition
 import com.intellij.debugger.engine.BreakpointStepMethodFilter
 import com.intellij.debugger.engine.DebugProcessImpl
-import com.intellij.debugger.engine.LambdaMethodFilter
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElementFactory
 import com.intellij.util.Range
 import com.sun.jdi.Location
-import org.jetbrains.kotlin.idea.util.application.runReadAction
-import org.jetbrains.kotlin.psi.JetBlockExpression
 import org.jetbrains.kotlin.psi.JetFunctionLiteralExpression
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 
 public class KotlinLambdaMethodFilter(
-        lambda: JetFunctionLiteralExpression,
-        private val myCallingExpressionLines: Range<Int>
+        private val lambda: JetFunctionLiteralExpression,
+        private val myCallingExpressionLines: Range<Int>,
+        private val isInline: Boolean
 ): BreakpointStepMethodFilter {
     private val myFirstStatementPosition: SourcePosition?
     private val myLastStatementLine: Int
@@ -62,6 +58,11 @@ public class KotlinLambdaMethodFilter(
 
     override fun locationMatches(process: DebugProcessImpl, location: Location): Boolean {
         val method = location.method()
+
+        if (isInline) {
+            return true
+        }
+
         return isLambdaName(method.name())
     }
 

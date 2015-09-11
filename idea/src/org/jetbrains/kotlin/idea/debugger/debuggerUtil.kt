@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 fun isInsideInlinedArgument(lambda: JetFunction, visibleVariables: List<Pair<LocalVariableProxyImpl, Value>>): Boolean {
     val function = lambda.analyze(BodyResolveMode.PARTIAL).get(BindingContext.FUNCTION, lambda) ?: return false
 
-    return function.valueParameters.all { isLocalVariableForParameterPresent(lambda.project, it, visibleVariables) }
+    return runReadAction { function.valueParameters }.all { isLocalVariableForParameterPresent(lambda.project, it, visibleVariables) }
 }
 
 private fun isLocalVariableForParameterPresent(project: Project, parameter: ValueParameterDescriptor, visibleVariables: List<Pair<LocalVariableProxyImpl, Value>>): Boolean {
