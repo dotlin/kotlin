@@ -15,7 +15,7 @@ public class KotlinMethodSmartStepTarget(
         val resolvedElement: JetElement,
         label: String,
         highlightElement: PsiElement,
-        lines: Range<Int>
+        lines: Range<Int>?
 ): SmartStepTarget(label, highlightElement, false, lines) {
     override fun getIcon(): Icon? {
         return when {

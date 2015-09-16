@@ -7,3 +7,5 @@ fun foo() {
 }
 
 fun f2() {}
+
+// EXISTS: f()

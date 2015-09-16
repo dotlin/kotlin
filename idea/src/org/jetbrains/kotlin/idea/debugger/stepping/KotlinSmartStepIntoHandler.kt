@@ -27,9 +27,11 @@ import com.intellij.util.Range
 import com.intellij.util.containers.OrderedSet
 import org.jetbrains.kotlin.codegen.intrinsics.IntrinsicMethods
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.caches.resolve.analyzeFully
+import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.CodeInsightUtils
 import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde
 import org.jetbrains.kotlin.psi.*
@@ -80,8 +82,13 @@ public class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
                 }
             }
 
-            override fun visitObjectLiteralExpression(expression: JetObjectLiteralExpression) {
-                // skip calls in object declarations
+            override fun visitObjectLiteralExpression(klass: JetObjectLiteralExpression) {
+                for (declaration in klass.objectDeclaration.declarations) {
+                    if (declaration is JetFunction) {
+                        val descriptor = declaration.resolveToDescriptor()
+                        recordFunction(descriptor, declaration.bodyExpression ?: declaration, false)
+                    }
+                }
             }
 
             override fun visitIfExpression(expression: JetIfExpression) {
@@ -162,14 +169,19 @@ public class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
                 val resolvedCall = expression.getResolvedCall(bindingContext) ?: return
 
                 val descriptor = resolvedCall.getResultingDescriptor()
+                recordFunction(descriptor, expression, true)
+            }
+
+            private fun recordFunction(descriptor: DeclarationDescriptor, highlightElement: JetElement, addLinesRange: Boolean) {
+                val linesRange = if (addLinesRange) lines else null
                 if (descriptor is CallableMemberDescriptor && !isIntrinsic(descriptor)) {
                     val function = DescriptorToSourceUtilsIde.getAnyDeclaration(file.getProject(), descriptor)
                     if (function is JetNamedFunction || function is JetSecondaryConstructor) {
                         val label = KotlinMethodSmartStepTarget.calcLabel(descriptor)
-                        result.add(KotlinMethodSmartStepTarget(function as JetFunction, label, expression, lines))
+                        result.add(KotlinMethodSmartStepTarget(function as JetFunction, label, highlightElement, linesRange))
                     }
                     else if (function is PsiMethod) {
-                        result.add(MethodSmartStepTarget(function, null, expression, false, lines))
+                        result.add(MethodSmartStepTarget(function, null, highlightElement, false, linesRange))
                     }
                 }
             }
@@ -180,7 +192,7 @@ public class KotlinSmartStepIntoHandler : JvmSmartStepIntoHandler() {
 
     override fun createMethodFilter(stepTarget: SmartStepTarget?): MethodFilter? {
         return when (stepTarget) {
-            is KotlinMethodSmartStepTarget -> KotlinBasicStepMethodFilter(stepTarget.resolvedElement, stepTarget.getCallingExpressionLines()!!)
+            is KotlinMethodSmartStepTarget -> KotlinBasicStepMethodFilter(stepTarget.resolvedElement, stepTarget.getCallingExpressionLines())
             is KotlinLambdaSmartStepTarget -> KotlinLambdaMethodFilter(stepTarget.getLambda(), stepTarget.getCallingExpressionLines()!!, stepTarget.isInline)
             else -> super.createMethodFilter(stepTarget)
         }

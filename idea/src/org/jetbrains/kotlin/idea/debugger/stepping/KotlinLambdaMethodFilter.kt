@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.types.expressions.OperatorConventions
 
 public class KotlinLambdaMethodFilter(
         private val lambda: JetFunctionLiteralExpression,
-        private val myCallingExpressionLines: Range<Int>,
+        private val myCallingExpressionLines: Range<Int>?,
         private val isInline: Boolean
 ): BreakpointStepMethodFilter {
     private val myFirstStatementPosition: SourcePosition?
@@ -66,9 +66,7 @@ public class KotlinLambdaMethodFilter(
         return isLambdaName(method.name())
     }
 
-    override fun getCallingExpressionLines(): Range<Int>? {
-        return myCallingExpressionLines
-    }
+    override fun getCallingExpressionLines() = myCallingExpressionLines
 
     companion object {
         public fun isLambdaName(name: String?): Boolean {

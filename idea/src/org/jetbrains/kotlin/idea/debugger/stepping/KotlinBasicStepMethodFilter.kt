@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.psi.JetPropertyAccessor
 
 public class KotlinBasicStepMethodFilter(
         val resolvedFunction: JetElement,
-        val myCallingExpressionLines: Range<Int>
+        val myCallingExpressionLines: Range<Int>?
 ) : NamedMethodFilter {
     private val myTargetMethodName: String
 
