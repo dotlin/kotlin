@@ -600,7 +600,7 @@ private fun ExtractionData.inferParametersInfo(
         commonParent: PsiElement,
         pseudocode: Pseudocode,
         bindingContext: BindingContext,
-        targetScope: LexicalScope?,
+        targetScope: LexicalScope,
         modifiedVarDescriptors: Set<VariableDescriptor>
 ): ParametersInfo {
     val info = ParametersInfo()
@@ -765,7 +765,7 @@ private fun ExtractionData.inferParametersInfo(
                     val instruction = pseudocode.getElementValue(callElement)?.createdAt as? InstructionWithReceivers
                     val receiverValue = instruction?.receiverValues?.entrySet()?.singleOrNull { it.getValue() == receiverToExtract }?.getKey()
                     if (receiverValue != null) {
-                        parameter.addTypePredicate(getExpectedTypePredicate(receiverValue, bindingContext))
+                        parameter.addTypePredicate(getExpectedTypePredicate(receiverValue, bindingContext, targetScope.ownerDescriptor.builtIns))
                     }
                 }
                 else if (extractFunctionRef) {
@@ -773,7 +773,7 @@ private fun ExtractionData.inferParametersInfo(
                 }
                 else {
                     pseudocode.getElementValuesRecursively(originalRef).forEach {
-                        parameter.addTypePredicate(getExpectedTypePredicate(it, bindingContext))
+                        parameter.addTypePredicate(getExpectedTypePredicate(it, bindingContext, targetScope.ownerDescriptor.builtIns))
                     }
                 }
 
