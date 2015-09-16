@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.psi.codeFragmentUtil.debugTypeInfo
 import org.jetbrains.kotlin.psi.debugText.getDebugText
 import org.jetbrains.kotlin.resolve.PossiblyBareType.type
 import org.jetbrains.kotlin.resolve.TypeResolver.FlexibleTypeCapabilitiesProvider
+import org.jetbrains.kotlin.resolve.calls.tasks.DynamicCallableDescriptors
 import org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil
 import org.jetbrains.kotlin.resolve.lazy.LazyEntity
 import org.jetbrains.kotlin.resolve.scopes.JetScope
@@ -50,7 +51,7 @@ public class TypeResolver(
         private val storageManager: StorageManager,
         private val lazinessToken: TypeLazinessToken,
         private val dynamicTypesSettings: DynamicTypesSettings,
-        private val modifiersChecker: ModifiersChecker
+        private val dynamicCallableDescriptors: DynamicCallableDescriptors
 ) {
 
     public open class FlexibleTypeCapabilitiesProvider {
@@ -244,7 +245,7 @@ public class TypeResolver(
             }
 
             override fun visitDynamicType(type: JetDynamicType) {
-                result = type(DynamicType)
+                result = type(dynamicCallableDescriptors.dynamicType)
                 if (!dynamicTypesSettings.dynamicTypesAllowed) {
                     c.trace.report(UNSUPPORTED.on(type, "Dynamic types are not supported in this context"))
                 }
