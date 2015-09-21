@@ -367,6 +367,12 @@ public class KotlinSteppingTestGenerated extends AbstractKotlinSteppingTest {
             doStepOverTest(fileName);
         }
 
+        @TestMetadata("stepOverReifiedParam.kt")
+        public void testStepOverReifiedParam() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("idea/testData/debugger/tinyApp/src/stepping/stepOver/stepOverReifiedParam.kt");
+            doStepOverTest(fileName);
+        }
+
         @TestMetadata("stepOverSimpleFun.kt")
         public void testStepOverSimpleFun() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("idea/testData/debugger/tinyApp/src/stepping/stepOver/stepOverSimpleFun.kt");
@@ -514,6 +520,12 @@ public class KotlinSteppingTestGenerated extends AbstractKotlinSteppingTest {
         @TestMetadata("smartStepIntoInlinedFunLiteral.kt")
         public void testSmartStepIntoInlinedFunLiteral() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("idea/testData/debugger/tinyApp/src/stepping/custom/smartStepIntoInlinedFunLiteral.kt");
+            doCustomTest(fileName);
+        }
+
+        @TestMetadata("stepIntoObjectLiteralFun.kt")
+        public void testStepIntoObjectLiteralFun() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("idea/testData/debugger/tinyApp/src/stepping/custom/stepIntoObjectLiteralFun.kt");
             doCustomTest(fileName);
         }
 
