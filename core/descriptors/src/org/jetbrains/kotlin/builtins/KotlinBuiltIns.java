@@ -377,8 +377,13 @@ public class KotlinBuiltIns {
     }
 
     @NotNull
+    public static String getFunctionXName(int parameterCount) {
+        return "Function" + parameterCount;
+    }
+
+    @NotNull
     public ClassDescriptor getFunction(int parameterCount) {
-        return getBuiltInClassByName("Function" + parameterCount);
+        return getBuiltInClassByName(getFunctionXName(parameterCount));
     }
 
     /**
@@ -388,7 +393,7 @@ public class KotlinBuiltIns {
     @Deprecated
     @NotNull
     public ClassDescriptor getExtensionFunction(int parameterCount) {
-        return getBuiltInClassByName("Function" + (parameterCount + 1));
+        return getBuiltInClassByName(getFunctionXName((parameterCount + 1)));
     }
 
     @NotNull
