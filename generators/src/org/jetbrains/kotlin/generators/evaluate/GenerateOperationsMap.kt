@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.generators.util.GeneratorsFileUtil
+import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatform
 import org.jetbrains.kotlin.types.JetType
 import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.utils.Printer
@@ -47,7 +48,7 @@ fun generate(): String {
     val unaryOperationsMap = arrayListOf<Pair<String, List<JetType>>>()
     val binaryOperationsMap = arrayListOf<Pair<String, List<JetType>>>()
 
-    val builtIns = KotlinBuiltIns.getInstance()
+    val builtIns = JvmPlatform.builtIns
     @Suppress("UNCHECKED_CAST")
     val allPrimitiveTypes = builtIns.getBuiltInsPackageScope().getDescriptors()
             .filter { it is ClassDescriptor && KotlinBuiltIns.isPrimitiveType(it.getDefaultType()) } as List<ClassDescriptor>
@@ -150,7 +151,7 @@ fun renderCheckBinaryOperation(name: String, params: List<JetType>): String {
 }
 
 private fun JetType.isIntegerType(): Boolean {
-    val builtIns = KotlinBuiltIns.getInstance()
+    val builtIns = JvmPlatform.builtIns
     return this == builtIns.getIntType() ||
            this == builtIns.getShortType() ||
            this == builtIns.getByteType() ||
