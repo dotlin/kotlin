@@ -21,11 +21,11 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.PrefixMatcher
 import com.intellij.psi.PsiClass
 import org.jetbrains.kotlin.asJava.KotlinLightClass
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.idea.core.KotlinIndicesHelper
 import org.jetbrains.kotlin.idea.project.ProjectStructureUtil
+import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.psi.JetFile
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.JetScope
@@ -37,14 +37,16 @@ class AllClassesCompletion(private val parameters: CompletionParameters,
                            private val kindFilter: (ClassKind) -> Boolean
 ) {
     fun collect(classDescriptorCollector: (ClassDescriptor) -> Unit, javaClassCollector: (PsiClass) -> Unit) {
+        val jetFile = parameters.originalFile as JetFile
+
         //TODO: this is a temporary hack until we have built-ins in indices
-        collectClassesFromScope(classDescriptorCollector, KotlinBuiltIns.getInstance().builtInsPackageScope)
+        collectClassesFromScope(classDescriptorCollector, jetFile.platform.builtIns.builtInsPackageScope)
 
         kotlinIndicesHelper
                 .getKotlinClasses({ prefixMatcher.prefixMatches(it) }, kindFilter)
                 .forEach { classDescriptorCollector(it) }
 
-        if (!ProjectStructureUtil.isJsKotlinModule(parameters.getOriginalFile() as JetFile)) {
+        if (!ProjectStructureUtil.isJsKotlinModule(jetFile)) {
             addAdaptedJavaCompletion(javaClassCollector)
         }
     }
