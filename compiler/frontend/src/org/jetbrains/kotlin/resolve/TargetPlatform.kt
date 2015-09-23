@@ -19,11 +19,15 @@ package org.jetbrains.kotlin.resolve
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.container.StorageComponentContainer
 import org.jetbrains.kotlin.container.useInstance
+import org.jetbrains.kotlin.descriptors.ModuleParameters
+import org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.calls.checkers.*
 import org.jetbrains.kotlin.resolve.validation.AccessToPrivateTopLevelSymbolValidator
 import org.jetbrains.kotlin.resolve.validation.DeprecatedSymbolValidator
 import org.jetbrains.kotlin.resolve.validation.OperatorValidator
 import org.jetbrains.kotlin.resolve.validation.SymbolUsageValidator
+import org.jetbrains.kotlin.storage.StorageManager
 import org.jetbrains.kotlin.types.DynamicTypesSettings
 
 public abstract class TargetPlatform(
@@ -35,8 +39,10 @@ public abstract class TargetPlatform(
 
     public abstract val platformConfigurator: PlatformConfigurator
     public val builtIns: KotlinBuiltIns = KotlinBuiltIns.getInstance()
+    abstract val defaultModuleParameters: ModuleParameters
 
     public object Default : TargetPlatform("Default") {
+        override val defaultModuleParameters = ModuleParameters.Empty
         override val platformConfigurator = PlatformConfigurator(DynamicTypesSettings(), listOf(), listOf(), listOf(), listOf(), listOf())
     }
 }
@@ -72,3 +78,8 @@ public open class PlatformConfigurator(
         }
     }
 }
+
+fun TargetPlatform.createModule(
+        name: Name,
+        storageManager: StorageManager
+) = ModuleDescriptorImpl(name, storageManager, defaultModuleParameters, builtIns)
