@@ -490,6 +490,13 @@ public class KotlinJpsBuildTest : AbstractKotlinJpsBuildTestCase() {
         assertEquals(expectedErrors, actualErrors, "Error messages were different")
     }
 
+    // TODO See KT-9299 In a project with circular dependencies between modules, IDE reports error on use of internal class from another module, but the corresponding code still compiles and runs.
+    public fun testCircularDependenciesInternalFromAnotherModule() {
+        initProject()
+        val result = makeAll()
+        result.assertSuccessful()
+    }
+
     public fun testCircularDependencyWithReferenceToOldVersionLib() {
         initProject()
 
