@@ -39,3 +39,9 @@ fun unnecessaryCast(x: String) = x as String
 fun unnecessaryElvis(x: String) = x ?: ""
 
 @JavaAnn(1, "abc") class MyClass
+
+class Foo {
+    var x: Int = 0
+        get = $x
+        set(value) { $x = value }
+}
