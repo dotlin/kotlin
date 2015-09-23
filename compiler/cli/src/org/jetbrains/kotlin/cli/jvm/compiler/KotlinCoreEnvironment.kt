@@ -75,6 +75,8 @@ import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.idea.JetFileType
 import org.jetbrains.kotlin.load.kotlin.JvmVirtualFileFinderFactory
 import org.jetbrains.kotlin.load.kotlin.KotlinBinaryClassCache
+import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityManager
+import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityManagerImpl
 import org.jetbrains.kotlin.parsing.JetParserDefinition
 import org.jetbrains.kotlin.parsing.JetScriptDefinitionProvider
 import org.jetbrains.kotlin.psi.JetFile
@@ -85,8 +87,7 @@ import org.jetbrains.kotlin.resolve.lazy.declarations.CliDeclarationProviderFact
 import org.jetbrains.kotlin.resolve.lazy.declarations.DeclarationProviderFactoryService
 import org.jetbrains.kotlin.utils.PathUtil
 import java.io.File
-import java.util.ArrayList
-import java.util.Comparator
+import java.util.*
 
 public class KotlinCoreEnvironment private constructor(
         parentDisposable: Disposable, 
@@ -114,6 +115,8 @@ public class KotlinCoreEnvironment private constructor(
         annotationsManager = CoreExternalAnnotationsManager(project.getComponent(javaClass<PsiManager>())!!)
         project.registerService(javaClass<ExternalAnnotationsManager>(), annotationsManager)
         project.registerService(javaClass<DeclarationProviderFactoryService>(), CliDeclarationProviderFactoryService(sourceFiles))
+        val moduleVisibilityManager = ModuleVisibilityManagerImpl()
+        project.registerService(ModuleVisibilityManager::class.java, moduleVisibilityManager)
 
         registerProjectServicesForCLI(projectEnvironment)
         registerProjectServices(projectEnvironment)
