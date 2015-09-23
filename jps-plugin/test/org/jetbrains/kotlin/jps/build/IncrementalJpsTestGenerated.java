@@ -329,6 +329,12 @@ public class IncrementalJpsTestGenerated extends AbstractIncrementalJpsTest {
             doTest(fileName);
         }
 
+        @TestMetadata("internalClassChanged")
+        public void testInternalClassChanged() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/incremental/pureKotlin/internalClassChanged/");
+            doTest(fileName);
+        }
+
         @TestMetadata("localClassChanged")
         public void testLocalClassChanged() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/incremental/pureKotlin/localClassChanged/");
