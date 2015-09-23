@@ -16,10 +16,10 @@
 
 package org.jetbrains.kotlin.serialization.builtins
 
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.builtins.createBuiltInPackageFragmentProvider
 import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime
 import org.jetbrains.kotlin.jvm.compiler.LoadDescriptorUtil.TEST_PACKAGE_FQNAME
+import org.jetbrains.kotlin.resolve.DefaultBuiltIns
 import org.jetbrains.kotlin.serialization.deserialization.ClassDescriptorFactory
 import org.jetbrains.kotlin.storage.LockBasedStorageManager
 import org.jetbrains.kotlin.test.JetTestUtils
@@ -48,7 +48,7 @@ public class BuiltInsSerializerTest : TestCaseWithTmpdir() {
         }
 
         module.initialize(packageFragmentProvider)
-        module.setDependencies(module, KotlinBuiltIns.getInstance().getBuiltInsModule())
+        module.setDependencies(module, DefaultBuiltIns.Instance.builtInsModule)
 
         RecursiveDescriptorComparator.validateAndCompareDescriptorWithFile(
                 module.getPackage(TEST_PACKAGE_FQNAME),

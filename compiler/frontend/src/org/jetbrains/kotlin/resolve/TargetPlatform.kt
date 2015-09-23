@@ -38,7 +38,8 @@ public abstract class TargetPlatform(
     }
 
     public abstract val platformConfigurator: PlatformConfigurator
-    public val builtIns: KotlinBuiltIns = KotlinBuiltIns.getInstance()
+    public val builtIns: KotlinBuiltIns
+        get() = DefaultBuiltIns.Instance
     abstract val defaultModuleParameters: ModuleParameters
 
     public object Default : TargetPlatform("Default") {

@@ -20,13 +20,13 @@ import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.ResolveTestCase;
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.descriptors.ClassDescriptor;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.DeclarationDescriptorVisitorEmptyBodies;
 import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde;
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase;
+import org.jetbrains.kotlin.resolve.DefaultBuiltIns;
 import org.jetbrains.kotlin.test.JetTestUtils;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class BuiltInsReferenceResolverTest extends ResolveTestCase {
     private static Collection<DeclarationDescriptor> getAllStandardDescriptors() {
         final List<DeclarationDescriptor> descriptors = new ArrayList<DeclarationDescriptor>();
 
-        PackageFragmentDescriptor builtinsPackageFragment = KotlinBuiltIns.getInstance().getBuiltInsPackageFragment();
+        PackageFragmentDescriptor builtinsPackageFragment = DefaultBuiltIns.getInstance().getBuiltInsPackageFragment();
 
         for (DeclarationDescriptor packageMember : builtinsPackageFragment.getMemberScope().getAllDescriptors()) {
             packageMember.acceptVoid(new DeclarationDescriptorVisitorEmptyBodies<Void, Void>() {
