@@ -48,6 +48,10 @@ public class JDIEval(
     )
 
     override fun loadClass(classType: Type): Value {
+        return loadClass(classType, classLoader)
+    }
+
+    fun loadClass(classType: Type, classLoader: ClassLoaderReference?): Value {
         val loadedClasses = vm.classesByName(classType.getInternalName())
         if (!loadedClasses.isEmpty()) {
             val loadedClass = loadedClasses[0]
@@ -106,8 +110,8 @@ public class JDIEval(
                 listOf(value)).boolean
     }
 
-    fun Type.asReferenceType(): ReferenceType = loadClass(this).jdiClass!!.reflectedType()
-    fun Type.asArrayType(): ArrayType = asReferenceType() as ArrayType
+    fun Type.asReferenceType(classLoader: ClassLoaderReference? = this@JDIEval.classLoader): ReferenceType = loadClass(this, classLoader).jdiClass!!.reflectedType()
+    fun Type.asArrayType(classLoader: ClassLoaderReference? = this@JDIEval.classLoader): ArrayType = asReferenceType(classLoader) as ArrayType
 
     override fun newArray(arrayType: Type, size: Int): Value {
         val jdiArrayType = arrayType.asArrayType()
@@ -331,12 +335,12 @@ public class JDIEval(
                 val dimensions = name.count { it == '[' }
                 val baseTypeName = if (dimensions > 0) name.substring(0, name.indexOf('[')) else name
 
-                val baseType = primitiveTypes[baseTypeName] ?: Type.getType("L$baseTypeName;").asReferenceType()
+                val baseType = primitiveTypes[baseTypeName] ?: Type.getType("L$baseTypeName;").asReferenceType(declaringType().classLoader())
 
                 if (dimensions == 0)
                     baseType
                 else
-                    Type.getType("[".repeat(dimensions) + baseType.asType().getDescriptor()).asReferenceType()
+                    Type.getType("[".repeat(dimensions) + baseType.asType().getDescriptor()).asReferenceType(declaringType().classLoader())
             }
         }
     }
