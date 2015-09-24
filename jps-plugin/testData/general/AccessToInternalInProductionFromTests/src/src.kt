@@ -1,3 +1,3 @@
-//fun foo() { }
+fun foo() { }
 
 internal fun internalBar() {}

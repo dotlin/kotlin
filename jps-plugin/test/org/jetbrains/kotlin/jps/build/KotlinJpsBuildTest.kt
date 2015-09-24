@@ -43,7 +43,7 @@ import org.jetbrains.kotlin.codegen.AsmUtil
 import org.jetbrains.kotlin.codegen.JvmCodegenUtil
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.test.InTextDirectivesUtils
+import org.jetbrains.kotlin.test.JetTestUtils
 import org.jetbrains.kotlin.test.MockLibraryUtil
 import org.jetbrains.kotlin.utils.PathUtil
 import org.jetbrains.org.objectweb.asm.ClassReader
@@ -478,16 +478,11 @@ public class KotlinJpsBuildTest : AbstractKotlinJpsBuildTestCase() {
         val result = makeAll()
         result.assertFailed()
 
-        val module2File = File(workDir, "module2/src/module2.kt")
-        val expectedErrors = InTextDirectivesUtils.findLinesWithPrefixesRemoved(FileUtilRt.loadFile(module2File), "// ERROR:")
-                .sorted()
-                .joinToString("\n")
         val actualErrors = result.getMessages(BuildMessage.Kind.ERROR)
-                .map { it.messageText }
-                .map { it.replace("^.+:\\d+:\\s+".toRegex(), "").trim() }
-                .sorted()
-                .joinToString("\n")
-        assertEquals(expectedErrors, actualErrors, "Error messages were different")
+                .map { it.messageText }.sorted().joinToString("\n")
+        val projectRoot = File(AbstractKotlinJpsBuildTestCase.TEST_DATA_PATH + "general/" + getTestName(false))
+        val expectedFile = File(projectRoot, "errors.txt")
+        JetTestUtils.assertEqualsToFile(expectedFile, actualErrors)
     }
 
     // TODO See KT-9299 In a project with circular dependencies between modules, IDE reports error on use of internal class from another module, but the corresponding code still compiles and runs.
