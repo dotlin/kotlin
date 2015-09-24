@@ -521,6 +521,13 @@ public class KotlinJpsBuildTest : AbstractKotlinJpsBuildTestCase() {
         result.assertSuccessful()
     }
 
+    public fun testAccessToInternalInProductionFromTests() {
+        initProject()
+
+        val result = makeAll()
+        result.assertSuccessful()
+    }
+
     private fun createKotlinJavaScriptLibraryArchive() {
         val jarFile = File(workDir, KOTLIN_JS_LIBRARY_JAR)
         try {
