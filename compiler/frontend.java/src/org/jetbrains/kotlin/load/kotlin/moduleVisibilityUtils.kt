@@ -60,16 +60,13 @@ public fun isContainedByCompiledPartOfOurModule(descriptor: DeclarationDescripto
     return false;
 }
 
-fun getSourceElement(declarationDescriptor: DeclarationDescriptor): SourceElement {
-    val descriptor = if (declarationDescriptor is PropertySetterDescriptor) declarationDescriptor.correspondingProperty else declarationDescriptor
-
-    return if (descriptor is CallableMemberDescriptor && descriptor.source === SourceElement.NO_SOURCE) {
-        descriptor.containingDeclaration.toSourceElement
-    }
-    else {
-        descriptor.toSourceElement
-    }
-}
+fun getSourceElement(descriptor: DeclarationDescriptor): SourceElement =
+        if (descriptor is CallableMemberDescriptor && descriptor.source === SourceElement.NO_SOURCE) {
+            descriptor.containingDeclaration.toSourceElement
+        }
+        else {
+            descriptor.toSourceElement
+        }
 
 private val DeclarationDescriptor.toSourceElement: SourceElement
     get() = if (this is DeclarationDescriptorWithSource) source else SourceElement.NO_SOURCE
