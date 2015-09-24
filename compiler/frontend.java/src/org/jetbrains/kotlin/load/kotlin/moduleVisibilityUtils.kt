@@ -75,6 +75,9 @@ class ModuleVisibilityHelperImpl: ModuleVisibilityHelper {
             if (isContainedByCompiledPartOfOurModule(what, it)) return true
         }
 
+        // Hack in order to allow access to internal elements in production code from tests
+        if (moduleVisibilityManager.chunk.size() == 1 && moduleVisibilityManager.chunk[0].getModuleType() == "java-test") return true
+
         return false
     }
 }
