@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.idea.intentions
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import org.jetbrains.kotlin.descriptors.impl.SyntheticFieldDescriptor
@@ -29,19 +29,18 @@ import org.jetbrains.kotlin.idea.quickfix.JetIntentionAction
 import org.jetbrains.kotlin.idea.quickfix.JetSingleIntentionActionFactory
 import org.jetbrains.kotlin.lexer.JetTokens
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.prevLeaf
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class IntroduceBackingPropertyIntention(): JetSelfTargetingIntention<JetProperty>(javaClass(), "Introduce backing property") {
     override fun isApplicableTo(element: JetProperty, caretOffset: Int): Boolean {
-        return canIntroduceBackingProperty(element)
-    }
-
-    override fun allowCaretInsideElement(element: PsiElement): Boolean {
-        val prop = element.getNonStrictParentOfType<JetProperty>() ?: return false
-        return element == prop.nameIdentifier || element == prop.valOrVarKeyword
+        if (!canIntroduceBackingProperty(element)) return false
+        var elementAtCaret = element.containingFile.findElementAt(caretOffset)
+        if (elementAtCaret is PsiWhiteSpace) {
+            elementAtCaret = element.containingFile.findElementAt(caretOffset - 1)
+        }
+        return elementAtCaret == element.nameIdentifier || elementAtCaret == element.valOrVarKeyword
     }
 
     override fun applyTo(element: JetProperty, editor: Editor) {
@@ -53,7 +52,7 @@ class IntroduceBackingPropertyIntention(): JetSelfTargetingIntention<JetProperty
             val name = element.name ?: return false
             if (name.startsWith('_')) return false
 
-            if (element.hasDelegate()) return false
+            if (element.hasDelegate() || element.receiverTypeReference != null) return false
 
             val containingClass = element.getStrictParentOfType<JetClassOrObject>() ?: return false
             return containingClass.declarations.none { it is JetProperty && it.name == "_" + name }
