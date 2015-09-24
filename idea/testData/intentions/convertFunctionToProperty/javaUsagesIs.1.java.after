@@ -1,0 +1,7 @@
+import static test.TestPackage.getIsFoo;
+
+class J {
+    void test() {
+        boolean b = getIsFoo();
+    }
+}
