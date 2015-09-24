@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.resolve
-
-import org.jetbrains.kotlin.builtins.BuiltInsInitializer
-import org.jetbrains.kotlin.builtins.KotlinBuiltIns
+package org.jetbrains.kotlin.builtins
 
 class DefaultBuiltIns : KotlinBuiltIns() {
     companion object {
