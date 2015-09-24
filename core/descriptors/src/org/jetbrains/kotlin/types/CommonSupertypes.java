@@ -298,6 +298,7 @@ public class CommonSupertypes {
         }
 
         if (outs != null) {
+            assert !outs.isEmpty() : "Out projections is empty for parameter " + parameterDescriptor + ", type projections " + typeProjections;
             Variance projectionKind = variance == OUT_VARIANCE ? Variance.INVARIANT : OUT_VARIANCE;
             JetType superType = findCommonSupertype(outs, recursionDepth + 1, maxDepth);
             for (JetType upperBound: parameterDescriptor.getUpperBounds()) {
@@ -308,6 +309,7 @@ public class CommonSupertypes {
             return new TypeProjectionImpl(projectionKind, superType);
         }
         if (ins != null) {
+            assert !ins.isEmpty() : "In projections is empty for parameter " + parameterDescriptor + ", type projections " + typeProjections;
             JetType intersection = TypeIntersector.intersectTypes(JetTypeChecker.DEFAULT, ins);
             if (intersection == null) {
                 return new TypeProjectionImpl(OUT_VARIANCE, findCommonSupertype(parameterDescriptor.getUpperBounds(), recursionDepth + 1, maxDepth));
