@@ -28,7 +28,9 @@ import org.jetbrains.kotlin.codegen.ClassFileFactory;
 import org.jetbrains.kotlin.codegen.GenerationUtils;
 import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime;
 import org.jetbrains.kotlin.config.CompilerConfiguration;
+import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityManager;
 import org.jetbrains.kotlin.load.kotlin.PackageClassUtils;
+import org.jetbrains.kotlin.modules.Module;
 import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.psi.JetFile;
 import org.jetbrains.kotlin.test.ConfigurationKind;
@@ -41,6 +43,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractCompileKotlinAgainstKotlinTest extends TestCaseWithTmpdir {
     private File aDir;
@@ -98,7 +102,7 @@ public abstract class AbstractCompileKotlinAgainstKotlinTest extends TestCaseWit
         return compileKotlin(ktBFile, bDir, environment, getTestRootDisposable());
     }
 
-    private static ClassFileFactory compileKotlin(
+    private ClassFileFactory compileKotlin(
             @NotNull File file, @NotNull File outputDir, @NotNull KotlinCoreEnvironment jetCoreEnvironment,
             @NotNull Disposable disposable
     ) throws IOException {
@@ -106,6 +110,50 @@ public abstract class AbstractCompileKotlinAgainstKotlinTest extends TestCaseWit
         String text = FileUtil.loadFile(file, true);
 
         JetFile psiFile = JetTestUtils.createFile(file.getName(), text, jetCoreEnvironment.getProject());
+
+        ModuleVisibilityManager.SERVICE.getInstance(jetCoreEnvironment.getProject()).addModule(new Module() {
+            @NotNull
+            @Override
+            public String getModuleName() {
+                return "module for test";
+            }
+
+            @NotNull
+            @Override
+            public String getModuleType() {
+                return "";
+            }
+
+            @NotNull
+            @Override
+            public String getOutputDirectory() {
+                return tmpdir.getAbsolutePath();
+            }
+
+            @NotNull
+            @Override
+            public List<String> getSourceFiles() {
+                return Collections.emptyList();
+            }
+
+            @NotNull
+            @Override
+            public List<String> getClasspathRoots() {
+                return Collections.emptyList();
+            }
+
+            @NotNull
+            @Override
+            public List<String> getAnnotationsRoots() {
+                return Collections.emptyList();
+            }
+
+            @NotNull
+            @Override
+            public List<String> getJavaSourceRoots() {
+                return Collections.emptyList();
+            }
+        });
 
         ClassFileFactory outputFiles = GenerationUtils.compileFileGetClassFileFactoryForTest(psiFile, jetCoreEnvironment);
 
