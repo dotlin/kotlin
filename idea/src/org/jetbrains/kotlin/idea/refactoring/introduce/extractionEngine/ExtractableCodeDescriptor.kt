@@ -252,6 +252,7 @@ abstract class OutputValueBoxer(val outputValues: List<OutputValue>) {
 
     class AsList(outputValues: List<OutputValue>): OutputValueBoxer(outputValues) {
         override val returnType: JetType by lazy {
+            assert(outputValues.isNotEmpty())
             val builtIns = outputValues.first().valueType.builtIns
             TypeUtils.substituteParameters(
                     builtIns.list,
