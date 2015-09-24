@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.modules.Module
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import java.io.File
 
-// This interface is here in order to to abstract compiler and IDE.
 interface ModuleVisibilityManager {
     val chunk: Collection<Module>
     fun addModule(module: Module)

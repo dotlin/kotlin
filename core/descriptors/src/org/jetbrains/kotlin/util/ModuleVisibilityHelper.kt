@@ -18,7 +18,6 @@ package org.jetbrains.kotlin.util
 
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 
-// This interface is needed to abstract compiler and reflection
 interface ModuleVisibilityHelper {
     fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor): Boolean
 
