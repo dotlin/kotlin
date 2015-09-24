@@ -119,6 +119,9 @@ public class Visibilities {
 
         @Override
         public boolean isVisible(@NotNull ReceiverValue receiver, @NotNull DeclarationDescriptorWithVisibility what, @NotNull DeclarationDescriptor from) {
+            DeclarationDescriptor fromOrModule = from instanceof PackageViewDescriptor ? ((PackageViewDescriptor) from).getModule() : from;
+            if (!DescriptorUtils.getContainingModule(what).isFriend(DescriptorUtils.getContainingModule(fromOrModule))) return false;
+
             return MODULE_VISIBILITY_HELPER.isInFriendModule(what, from);
         }
     };
@@ -262,16 +265,6 @@ public class Visibilities {
 
     static {
         Iterator<ModuleVisibilityHelper> iterator = ServiceLoader.load(ModuleVisibilityHelper.class, ModuleVisibilityHelper.class.getClassLoader()).iterator();
-        if (iterator.hasNext()) {
-            MODULE_VISIBILITY_HELPER = iterator.next();
-        }
-        else {
-            MODULE_VISIBILITY_HELPER = new ModuleVisibilityHelper() {
-                @Override
-                public boolean isInFriendModule(@NotNull DeclarationDescriptor what, @NotNull DeclarationDescriptor from) {
-                    DeclarationDescriptor fromOrModule = from instanceof PackageViewDescriptor ? ((PackageViewDescriptor) from).getModule() : from;
-                    return DescriptorUtils.isInFriendModule(what, fromOrModule);                }
-            };
-        }
+        MODULE_VISIBILITY_HELPER = iterator.hasNext() ? iterator.next() : ModuleVisibilityHelper.EMPTY.INSTANCE$;
     }
 }

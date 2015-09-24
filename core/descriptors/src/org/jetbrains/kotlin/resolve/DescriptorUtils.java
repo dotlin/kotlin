@@ -589,27 +589,6 @@ public class DescriptorUtils {
         return getJvmNameAnnotation(annotated.getAnnotations());
     }
 
-    @NotNull
-    public static SourceElement getSourceElement(@NotNull DeclarationDescriptor descriptor) {
-        if (descriptor instanceof PropertySetterDescriptor) {
-            descriptor = ((PropertySetterDescriptor) descriptor).getCorrespondingProperty();
-        }
-
-        if (descriptor instanceof CallableMemberDescriptor && ((CallableMemberDescriptor)descriptor).getSource() == SourceElement.NO_SOURCE) {
-            descriptor = descriptor.getContainingDeclaration();
-        }
-
-        if (descriptor instanceof DeclarationDescriptorWithSource) {
-            return ((DeclarationDescriptorWithSource) descriptor).getSource();
-        }
-
-        return SourceElement.NO_SOURCE;
-    }
-
-    public static boolean isInFriendModule(@NotNull DeclarationDescriptor what, @NotNull DeclarationDescriptor from) {
-        return getContainingModule(what).isFriend(DescriptorUtils.getContainingModule(from));
-    }
-
     private static void getSubPackagesFqNames(PackageViewDescriptor packageView, Set<FqName> result) {
         FqName fqName = packageView.getFqName();
         if (!fqName.isRoot()) {

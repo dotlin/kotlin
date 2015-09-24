@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.util
+package org.jetbrains.kotlin.idea.util
 
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityManager
+import org.jetbrains.kotlin.modules.Module
 
-// This interface is needed to abstract compiler and reflection
-interface ModuleVisibilityHelper {
-    fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor): Boolean
-
-    object EMPTY: ModuleVisibilityHelper {
-        override fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor) = true
-    }
+class IdeModuleVisibilityManagerImpl() : ModuleVisibilityManager {
+    override val chunk: Collection<Module> = emptyList()
+    override fun addModule(module: Module) {}
 }

@@ -42,7 +42,6 @@ import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.config.CompilerConfiguration;
 import org.jetbrains.kotlin.context.ModuleContext;
 import org.jetbrains.kotlin.idea.MainFunctionDetector;
-import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityHelperImpl;
 import org.jetbrains.kotlin.load.kotlin.ModuleVisibilityManager;
 import org.jetbrains.kotlin.load.kotlin.PackageClassUtils;
 import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache;
@@ -154,8 +153,6 @@ public class KotlinToJVMBytecodeCompiler {
             GenerationState generationState =
                     generate(environment, result, jetFiles, module, moduleOutputDirectory,
                              module.getModuleName());
-            // This is safe for now, because multithreading for incremental compilation for Kotlin has been disabled (see CompileRunnerUtil.invokeExecMethod)
-            //ModuleVisibilityHelperImpl.Companion.setModuleOutputDirectory(moduleOutputDirectory);
             outputFiles.put(module, generationState.getFactory());
         }
 

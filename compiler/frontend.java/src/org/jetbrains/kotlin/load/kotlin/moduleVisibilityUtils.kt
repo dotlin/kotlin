@@ -20,16 +20,24 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VfsUtilCore
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
-import org.jetbrains.kotlin.descriptors.PackageViewDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.load.java.lazy.descriptors.LazyJavaPackageFragment
 import org.jetbrains.kotlin.load.kotlin.incremental.IncrementalPackageFragmentProvider
 import org.jetbrains.kotlin.modules.Module
 import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.resolve.source.KotlinSourceElement
-import org.jetbrains.kotlin.util.ModuleVisibilityHelper
 import java.io.File
+
+// This interface is here in order to to abstract compiler and IDE.
+interface ModuleVisibilityManager {
+    val chunk: Collection<Module>
+    fun addModule(module: Module)
+
+    public object SERVICE {
+        @JvmStatic
+        public fun getInstance(project: Project): ModuleVisibilityManager =
+                ServiceManager.getService(project, ModuleVisibilityManager::class.java)
+    }
+}
 
 public fun isContainedByCompiledPartOfOurModule(descriptor: DeclarationDescriptor, outDirectory: File?): Boolean {
     val packageFragment = DescriptorUtils.getParentOfType(descriptor, PackageFragmentDescriptor::class.java, false)
@@ -38,7 +46,7 @@ public fun isContainedByCompiledPartOfOurModule(descriptor: DeclarationDescripto
 
     if (outDirectory == null || packageFragment !is LazyJavaPackageFragment) return false
 
-    val source = DescriptorUtils.getSourceElement(descriptor)
+    val source = getSourceElement(descriptor)
     if (source is KotlinJvmBinarySourceElement) {
         val binaryClass = source.binaryClass
         if (binaryClass is VirtualFileKotlinClass) {
@@ -53,51 +61,16 @@ public fun isContainedByCompiledPartOfOurModule(descriptor: DeclarationDescripto
     return false;
 }
 
-class ModuleVisibilityHelperImpl: ModuleVisibilityHelper {
+fun getSourceElement(declarationDescriptor: DeclarationDescriptor): SourceElement {
+    val descriptor = if (declarationDescriptor is PropertySetterDescriptor) declarationDescriptor.correspondingProperty else declarationDescriptor
 
-    override fun isInFriendModule(what: DeclarationDescriptor, from: DeclarationDescriptor): Boolean {
-        val fromOrModule = if (from is PackageViewDescriptor) from.module else from
-        if (!DescriptorUtils.isInFriendModule(what, fromOrModule)) return false
-
-        val fromSource = DescriptorUtils.getSourceElement(from)
-        if (fromSource !is KotlinSourceElement) return true
-
-        val project = fromSource.psi.project
-        val moduleVisibilityManager = ModuleVisibilityManager.SERVICE.getInstance(project)
-
-        val whatSource = DescriptorUtils.getSourceElement(what)
-        if (whatSource is KotlinSourceElement) return true
-
-        val outputDirectories = moduleVisibilityManager.chunk.map { File(it.getOutputDirectory()) }
-        if (outputDirectories.isEmpty()) return isContainedByCompiledPartOfOurModule(what, null)
-
-        outputDirectories.forEach {
-            if (isContainedByCompiledPartOfOurModule(what, it)) return true
-        }
-
-        // Hack in order to allow access to internal elements in production code from tests
-        if (moduleVisibilityManager.chunk.size() == 1 && moduleVisibilityManager.chunk[0].getModuleType() == "java-test") return true
-
-        return false
+    return if (descriptor is CallableMemberDescriptor && descriptor.source === SourceElement.NO_SOURCE) {
+        descriptor.containingDeclaration.toSourceElement
+    }
+    else {
+        descriptor.toSourceElement
     }
 }
 
-interface ModuleVisibilityManager {
-     val chunk: MutableList<Module>
-    fun addModule(module: Module)
-
-    public object SERVICE {
-        @JvmStatic
-        public fun getInstance(project: Project): ModuleVisibilityManager =
-                ServiceManager.getService(project, ModuleVisibilityManager::class.java)
-    }
-
-}
-
-class ModuleVisibilityManagerImpl() : ModuleVisibilityManager {
-    override val chunk: MutableList<Module> = arrayListOf()
-
-    override fun addModule(module: Module) {
-        chunk.add(module)
-    }
-}
+private val DeclarationDescriptor.toSourceElement: SourceElement
+    get() = if (this is DeclarationDescriptorWithSource) source else SourceElement.NO_SOURCE
