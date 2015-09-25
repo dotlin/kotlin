@@ -16,7 +16,7 @@
 
 package org.jetbrains.kotlin.builtins
 
-class DefaultBuiltIns : KotlinBuiltIns() {
+class DefaultBuiltIns private constructor() : KotlinBuiltIns() {
     companion object {
         private val initializer = BuiltInsInitializer {
             DefaultBuiltIns()
