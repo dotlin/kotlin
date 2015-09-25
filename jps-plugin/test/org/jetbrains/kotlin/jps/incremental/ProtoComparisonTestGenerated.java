@@ -119,6 +119,11 @@ public class ProtoComparisonTestGenerated extends AbstractProtoComparisonTest {
             doTest(fileName);
         }
 
+        @TestMetadata("packageFacadeMultifileClassDifference")
+        public void testPackageFacadeMultifileClassDifference() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/comparison/classPrivateOnlyChange/packageFacadeMultifileClassDifference/");
+            doTest(fileName);
+        }
     }
 
     @TestMetadata("jps-plugin/testData/comparison/classMembersOnlyChanged")
