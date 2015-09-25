@@ -521,7 +521,7 @@ fun createTypeForFunctionPlaceholder(
         functionPlaceholderTypeConstructor.getArgumentTypes()
     }
     val receiverType = if (isExtension) DONT_CARE else null
-    return expectedType.builtIns.getFunctionType(Annotations.EMPTY, receiverType, newArgumentTypes, DONT_CARE)
+    return functionPlaceholder.builtIns.getFunctionType(Annotations.EMPTY, receiverType, newArgumentTypes, DONT_CARE)
 }
 
 private fun TypeSubstitutor.setApproximateCapturedTypes(): TypeSubstitutor {
