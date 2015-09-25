@@ -149,7 +149,7 @@ public class DeserializedClassDescriptor(
             }
         }
 
-        result.addAll(c.components.additionalSupertypesProvider.forClass(this))
+        result.addAll(c.components.additionalSupertypes.forClass(this))
 
         if (unresolved.isNotEmpty()) {
             c.components.errorReporter.reportIncompleteHierarchy(this, unresolved.map(DeserializedType::getPresentableText))

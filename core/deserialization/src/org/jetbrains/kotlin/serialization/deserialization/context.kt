@@ -35,7 +35,7 @@ public class DeserializationComponents(
         val flexibleTypeCapabilitiesDeserializer: FlexibleTypeCapabilitiesDeserializer,
         val fictitiousClassDescriptorFactory: ClassDescriptorFactory,
         val typeCapabilitiesLoader: TypeCapabilitiesLoader = TypeCapabilitiesLoader.NONE,
-        val additionalSupertypesProvider: AdditionalSupertypesProvider = AdditionalSupertypesProvider()
+        val additionalSupertypes: AdditionalSupertypes = AdditionalSupertypes.None
 ) {
     public val classDeserializer: ClassDeserializer = ClassDeserializer(this)
 
