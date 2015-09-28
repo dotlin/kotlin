@@ -419,6 +419,18 @@ public class IncrementalJpsTestGenerated extends AbstractIncrementalJpsTest {
             doTest(fileName);
         }
 
+        @TestMetadata("packageMultifileClassOneFileChanged")
+        public void testPackageMultifileClassOneFileChanged() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/incremental/pureKotlin/packageMultifileClassOneFileChanged/");
+            doTest(fileName);
+        }
+
+        @TestMetadata("packageMultifileClassPrivateOnlyChanged")
+        public void testPackageMultifileClassPrivateOnlyChanged() throws Exception {
+            String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/incremental/pureKotlin/packageMultifileClassPrivateOnlyChanged/");
+            doTest(fileName);
+        }
+
         @TestMetadata("packagePrivateOnlyChanged")
         public void testPackagePrivateOnlyChanged() throws Exception {
             String fileName = JetTestUtils.navigationMetadata("jps-plugin/testData/incremental/pureKotlin/packagePrivateOnlyChanged/");
