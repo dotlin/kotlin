@@ -56,9 +56,7 @@ public class JetParameterUsage(
     }
 
     override fun getReplacementText(changeInfo: JetChangeInfo): String =
-            if (changeInfo.receiverParameterInfo != parameterInfo) {
-                parameterInfo.getInheritedName(containingCallable)
-            } else "this@${changeInfo.getNewName()}"
+            if (changeInfo.receiverParameterInfo != parameterInfo) parameterInfo.getInheritedName(containingCallable) else "this"
 }
 
 public class JetNonQualifiedOuterThisUsage(
