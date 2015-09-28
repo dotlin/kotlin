@@ -317,7 +317,7 @@ public class IncrementalCacheImpl(
 
             ClassReader(bytes).accept(object : ClassVisitor(Opcodes.ASM5) {
                 override fun visitField(access: Int, name: String, desc: String, signature: String?, value: Any?): FieldVisitor? {
-                    val staticFinal = Opcodes.ACC_STATIC or Opcodes.ACC_FINAL
+                    val staticFinal = (Opcodes.ACC_STATIC or Opcodes.ACC_FINAL) and Opcodes.ACC_PRIVATE.inv()
                     if (value != null && access and staticFinal == staticFinal) {
                         result[name] = value
                     }
