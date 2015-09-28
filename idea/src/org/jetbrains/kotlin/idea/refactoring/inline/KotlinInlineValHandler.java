@@ -54,8 +54,8 @@ import org.jetbrains.kotlin.diagnostics.Diagnostic;
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory;
 import org.jetbrains.kotlin.diagnostics.Errors;
 import org.jetbrains.kotlin.idea.JetLanguage;
-import org.jetbrains.kotlin.idea.resolve.ResolutionFacade;
 import org.jetbrains.kotlin.idea.caches.resolve.ResolutionUtils;
+import org.jetbrains.kotlin.idea.resolve.ResolutionFacade;
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers;
 import org.jetbrains.kotlin.idea.util.ShortenReferences;
 import org.jetbrains.kotlin.lexer.JetTokens;
@@ -66,6 +66,7 @@ import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall;
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode;
 import org.jetbrains.kotlin.types.ErrorUtils;
 import org.jetbrains.kotlin.types.JetType;
+import org.jetbrains.kotlin.types.expressions.OperatorConventions;
 
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class KotlinInlineValHandler extends InlineActionHandler {
             return false;
         }
         JetProperty property = (JetProperty) element;
-        return !property.isVar() && property.getGetter() == null && property.getReceiverTypeReference() == null;
+        return property.getGetter() == null && property.getReceiverTypeReference() == null;
     }
 
     @Override
@@ -106,11 +107,20 @@ public class KotlinInlineValHandler extends InlineActionHandler {
                 ((JetBinaryExpression) parent).getLeft() == expression) {
                 assignments.add(parent);
             }
+            //noinspection SuspiciousMethodCalls
+            if (parent instanceof JetUnaryExpression &&
+                OperatorConventions.INCREMENT_OPERATIONS.contains(((JetUnaryExpression) parent).getOperationToken())) {
+                assignments.add(parent);
+            }
         }
 
         final JetExpression initializer;
         if (initializerInDeclaration != null) {
             initializer = initializerInDeclaration;
+            if (!assignments.isEmpty()) {
+                reportAmbiguousAssignment(project, editor, name, assignments);
+                return;
+            }
         }
         else {
             if (assignments.size() == 1) {
@@ -120,9 +130,7 @@ public class KotlinInlineValHandler extends InlineActionHandler {
                 initializer = null;
             }
             if (initializer == null) {
-                String key = assignments.isEmpty() ? "variable.has.no.initializer" : "variable.has.no.dominating.definition";
-                String message = RefactoringBundle.getCannotRefactorMessage(RefactoringBundle.message(key, name));
-                CommonRefactoringUtil.showErrorHint(project, editor, message, RefactoringBundle.message("inline.variable.title"), HelpID.INLINE_VARIABLE);
+                reportAmbiguousAssignment(project, editor, name, assignments);
                 return;
             }
         }
@@ -194,6 +202,23 @@ public class KotlinInlineValHandler extends InlineActionHandler {
                 },
                 RefactoringBundle.message("inline.command", name),
                 null);
+    }
+
+    private static void reportAmbiguousAssignment(Project project, Editor editor, String name, Set<PsiElement> assignments) {
+        String key = assignments.isEmpty() ? "variable.has.no.initializer" : "variable.has.no.dominating.definition";
+        String message = RefactoringBundle.getCannotRefactorMessage(RefactoringBundle.message(key, name));
+        showErrorHint(project, editor, message);
+    }
+
+    private static void reportWriteAccess(Project project, Editor editor, String name) {
+        String message = RefactoringBundle.getCannotRefactorMessage(
+                RefactoringBundle.message("variable.is.accessed.for.writing", name)
+        );
+        showErrorHint(project, editor, message);
+    }
+
+    private static void showErrorHint(Project project, Editor editor, String message) {
+        CommonRefactoringUtil.showErrorHint(project, editor, message, RefactoringBundle.message("inline.variable.title"), HelpID.INLINE_VARIABLE);
     }
 
     private static void highlightExpressions(Project project, Editor editor, List<? extends PsiElement> elements) {
