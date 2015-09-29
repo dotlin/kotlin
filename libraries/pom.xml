@@ -105,6 +105,7 @@
         <module>examples/browser-example</module>
         <module>examples/browser-example-with-library</module>
         <module>examples/kotlin-gradle-subplugin-example</module>
+        <module>tools/kotlin-osgi-bundle</module>
     </modules>
 
     <dependencies>
