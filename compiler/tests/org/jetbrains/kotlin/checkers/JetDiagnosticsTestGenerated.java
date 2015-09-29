@@ -1040,6 +1040,12 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                     doTest(fileName);
                 }
 
+                @TestMetadata("assignment.kt")
+                public void testAssignment() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/options/assignment.kt");
+                    doTest(fileName);
+                }
+
                 @TestMetadata("documented.kt")
                 public void testDocumented() throws Exception {
                     String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/options/documented.kt");
@@ -1049,6 +1055,12 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                 @TestMetadata("forParam.kt")
                 public void testForParam() throws Exception {
                     String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/options/forParam.kt");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("functionExpression.kt")
+                public void testFunctionExpression() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/options/functionExpression.kt");
                     doTest(fileName);
                 }
 
@@ -1359,6 +1371,12 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
             @TestMetadata("CyclicReferenceInitializer.kt")
             public void testCyclicReferenceInitializer() throws Exception {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/backingField/CyclicReferenceInitializer.kt");
+                doTest(fileName);
+            }
+
+            @TestMetadata("ExtensionProperty.kt")
+            public void testExtensionProperty() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/backingField/ExtensionProperty.kt");
                 doTest(fileName);
             }
 
