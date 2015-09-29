@@ -25,6 +25,11 @@ import org.jetbrains.kotlin.rmi.kotlinr.KotlinCompilerClient
 import org.jetbrains.kotlin.test.JetTestUtils
 import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.concurrent.thread
+
+
+val COMPILER_CLASS_FQN = "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
+val TIMEOUT_DAEMON_RUNNER_EXIT_MS = 1000L
 
 public class CompilerDaemonTest : KotlinIntegrationTestBase() {
 
@@ -33,6 +38,13 @@ public class CompilerDaemonTest : KotlinIntegrationTestBase() {
     val compilerClassPath = listOf(
             File(KotlinIntegrationTestBase.getCompilerLib(), "kotlin-compiler.jar"))
     val compilerId by lazy(LazyThreadSafetyMode.NONE) { CompilerId.makeCompilerId(compilerClassPath) }
+
+    private fun runCompiler(vararg args: String): Int =
+        runJava(getTestBaseDir(), "compiler",
+                "-cp",
+                compilerClassPath.joinToString(File.pathSeparator) { it.absolutePath },
+                COMPILER_CLASS_FQN,
+                *args)
 
     private fun compileOnDaemon(compilerId: CompilerId, daemonJVMOptions: DaemonJVMOptions, daemonOptions: DaemonOptions, vararg args: String): CompilerResults {
         val daemon = KotlinCompilerClient.connectToCompileService(compilerId, daemonJVMOptions, daemonOptions, DaemonReportingTargets(out = System.err), autostart = true, checkId = true)
@@ -176,6 +188,36 @@ public class CompilerDaemonTest : KotlinIntegrationTestBase() {
         KotlinCompilerClient.shutdownCompileService(compilerId2, daemonOptions)
         logFile2.assertLogContainsSequence("Shutdown complete")
         logFile2.delete()
+    }
+
+    public fun testDaemonTransitiveRun() {
+        val javaExecutable = File( File(System.getProperty("java.home"), "bin"), "java")
+        val script = JetTestUtils.getTestDataPathBase() + "/integration/smoke/daemonRunner/daemonRunner.kts"
+        val runFile = createTempFile("kotlin-daemon-transitive-run-test", ".run")
+        val args = listOf(
+                javaExecutable.absolutePath,
+                "-cp",
+                compilerClassPath.joinToString(File.pathSeparator) { it.absolutePath },
+                COMPILER_CLASS_FQN,
+                "-script",
+                script,
+                "-D$COMPILE_DAEMON_OPTIONS_PROPERTY=\"clientAliveFlagPath=${runFile.absolutePath},runFilesPath=${tmpdir.absolutePath}\"")
+        try {
+            val runnerProcess = ProcessBuilder(args).start()
+            val waitThread = thread {
+                runnerProcess.waitFor()
+            }
+            waitThread.join(TIMEOUT_DAEMON_RUNNER_EXIT_MS)
+
+            // testing that running daemon in the child process doesn't block process.waitFor()
+            // that may happen on windows if simple processBuilder.start is used due to handles inheritance
+            // therefore the daemon client uses non-standard execution method
+            TestCase.assertFalse(waitThread.isAlive)
+        }
+        finally {
+            if (runFile.exists())
+                runFile.delete()
+        }
     }
 }
 
