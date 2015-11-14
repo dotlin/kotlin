@@ -678,7 +678,12 @@ public class KotlinExpressionParsing extends AbstractKotlinParsing {
             parseLocalDeclaration();
         }
         else if (at(IDENTIFIER)) {
-            parseSimpleNameExpression();
+            if (myBuilder.rawLookup(1) == OPEN_QUOTE) {
+                parseStringTemplate();
+            }
+            else {
+                parseSimpleNameExpression();
+            }
         }
         else if (at(LBRACE)) {
             parseFunctionLiteral();
@@ -701,9 +706,15 @@ public class KotlinExpressionParsing extends AbstractKotlinParsing {
      *   ;
      */
     private void parseStringTemplate() {
-        assert _at(OPEN_QUOTE);
+        assert _at(OPEN_QUOTE) || _at(IDENTIFIER);
 
         PsiBuilder.Marker template = mark();
+
+        if (_at(IDENTIFIER)) {
+            PsiBuilder.Marker simpleName = mark();
+            advance(); // IDENTIFIER
+            simpleName.done(REFERENCE_EXPRESSION);
+        }
 
         advance(); // OPEN_QUOTE
 

@@ -1,0 +1,89 @@
+JetFile: prefixedStringTemplates.kt
+  PACKAGE_DIRECTIVE
+    <empty list>
+  IMPORT_LIST
+    <empty list>
+  FUN
+    PsiElement(fun)('fun')
+    PsiWhiteSpace(' ')
+    PsiElement(IDENTIFIER)('foo')
+    VALUE_PARAMETER_LIST
+      PsiElement(LPAR)('(')
+      PsiElement(RPAR)(')')
+    PsiWhiteSpace(' ')
+    BLOCK
+      PsiElement(LBRACE)('{')
+      PsiWhiteSpace('\n    ')
+      STRING_TEMPLATE
+        REFERENCE_EXPRESSION
+          PsiElement(IDENTIFIER)('a')
+        PsiElement(OPEN_QUOTE)('"')
+        SHORT_STRING_TEMPLATE_ENTRY
+          PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+          REFERENCE_EXPRESSION
+            PsiElement(IDENTIFIER)('foo')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)(' = ')
+        SHORT_STRING_TEMPLATE_ENTRY
+          PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+          REFERENCE_EXPRESSION
+            PsiElement(IDENTIFIER)('bar')
+        PsiElement(CLOSING_QUOTE)('"')
+      PsiWhiteSpace('\n    ')
+      REFERENCE_EXPRESSION
+        PsiElement(IDENTIFIER)('a')
+      PsiWhiteSpace(' ')
+      PsiErrorElement:Unexpected tokens (use ';' to separate expressions on the same line)
+        PsiElement(OPEN_QUOTE)('"')
+        PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+        PsiElement(IDENTIFIER)('foo')
+        PsiElement(REGULAR_STRING_PART)(' = ')
+        PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+        PsiElement(IDENTIFIER)('bar')
+        PsiElement(CLOSING_QUOTE)('"')
+      PsiWhiteSpace('\n    ')
+      REFERENCE_EXPRESSION
+        PsiElement(IDENTIFIER)('a')
+      PsiComment(BLOCK_COMMENT)('/**/')
+      PsiErrorElement:Unexpected tokens (use ';' to separate expressions on the same line)
+        PsiElement(OPEN_QUOTE)('"')
+        PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+        PsiElement(IDENTIFIER)('foo')
+        PsiElement(REGULAR_STRING_PART)(' = ')
+        PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+        PsiElement(IDENTIFIER)('bar')
+        PsiElement(CLOSING_QUOTE)('"')
+      PsiWhiteSpace('\n    ')
+      STRING_TEMPLATE
+        REFERENCE_EXPRESSION
+          PsiElement(IDENTIFIER)('a')
+        PsiElement(OPEN_QUOTE)('"""')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('\n')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('    ')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('"')
+        SHORT_STRING_TEMPLATE_ENTRY
+          PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+          REFERENCE_EXPRESSION
+            PsiElement(IDENTIFIER)('foo')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('"')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)(' = ')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('"')
+        SHORT_STRING_TEMPLATE_ENTRY
+          PsiElement(SHORT_TEMPLATE_ENTRY_START)('$')
+          REFERENCE_EXPRESSION
+            PsiElement(IDENTIFIER)('bar')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('"')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('\n')
+        LITERAL_STRING_TEMPLATE_ENTRY
+          PsiElement(REGULAR_STRING_PART)('    ')
+        PsiElement(CLOSING_QUOTE)('"""')
+      PsiWhiteSpace('\n')
+      PsiElement(RBRACE)('}')

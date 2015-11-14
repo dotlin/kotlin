@@ -2640,6 +2640,12 @@ public class ParsingTestGenerated extends AbstractParsingTest {
                 KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/psi/stringTemplates"), Pattern.compile("^(.*)\\.kts?$"), true);
             }
 
+            @TestMetadata("prefixedStringTemplates.kt")
+            public void testPrefixedStringTemplates() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/psi/stringTemplates/prefixedStringTemplates.kt");
+                doParsingTest(fileName);
+            }
+
             @TestMetadata("RawStringsWithManyQuotes.kt")
             public void testRawStringsWithManyQuotes() throws Exception {
                 String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/psi/stringTemplates/RawStringsWithManyQuotes.kt");

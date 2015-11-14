@@ -22,6 +22,7 @@ import com.intellij.psi.LiteralTextEscaper;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.KtNodeTypes;
 import org.jetbrains.kotlin.lexer.KtTokens;
 
@@ -35,6 +36,11 @@ public class KtStringTemplateExpression extends KtExpressionImpl implements PsiL
     @Override
     public <R, D> R accept(@NotNull KtVisitor<R, D> visitor, D data) {
         return visitor.visitStringTemplateExpression(this, data);
+    }
+
+    @Nullable
+    public KtSimpleNameExpression getPrefixReference() {
+        return findChildByClass(KtSimpleNameExpression.class);
     }
 
     @NotNull
